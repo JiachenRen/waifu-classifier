@@ -9,4 +9,4 @@ The midterm update can be found [here](docs/midterm_update.md)
 ## Data Collection
 
 We made a dedicated scraper to collect data from [mywaifulist.moe](https://mywaifulist.moe). 
-Here is the [repo](get_waifu) containing the code for the scraper and the collected data.
+Here is the [repo](https://github.com/JiachenRen/get_waifu) containing the code for the scraper and the collected data.
