@@ -1,0 +1,3 @@
+[submodule "get_waifu"]
+	path = get_waifu
+	url = https://github.com/JiachenRen/get_waifu.git
