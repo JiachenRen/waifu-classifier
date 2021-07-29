@@ -130,7 +130,7 @@ class NgramModelWithInterpolation(NgramModel):
 
 if __name__ == '__main__':
     m: NgramModel = create_ngram_model(NgramModelWithInterpolation, '../data/waifu_descriptions.txt', 4)
-    print('Training finished. Generating random text.')
+    print(f'Training finished. Generating random text.')
     while True:
         print(m.random_text(100))
 

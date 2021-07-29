@@ -1,1 +1,2 @@
 data/waifu_descriptions.txt filter=lfs diff=lfs merge=lfs -text
+data/waifu_descriptions_normalized.txt filter=lfs diff=lfs merge=lfs -text
