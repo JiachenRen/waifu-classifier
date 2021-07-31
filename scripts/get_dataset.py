@@ -15,6 +15,40 @@ details_file.close()
 wv: KeyedVectors = KeyedVectors.load('../data/word2vec.wordvectors', mmap='r')
 
 
+def _get_rank(x, attr):
+    rank = x[attr]
+    if rank is None:
+        return 15000
+    return rank
+
+
+def vectorize(descriptions, sequence_length=100):
+    word_lists = [tokenize.word_tokenize(desc) for desc in descriptions]
+    desc_sequences = np.full((len(descriptions), sequence_length), 0)
+    for i, word_list in enumerate(word_lists):
+        print(f'{i + 1} of {len(word_lists)}')
+        for j in range(sequence_length):
+            if j >= len(word_list):
+                continue
+            word = word_list[j].lower()
+            if word in wv:
+                desc_sequences[i, j] = wv.key_to_index[word]
+    return desc_sequences
+
+
+def get_waifu_dataset(sequence_length=100):
+    sequences_path = '../data/desc_sequences.npy'
+    if path.exists(sequences_path):
+        desc_sequences = np.load(sequences_path)
+    else:
+        descriptions = [x['description'] for x in details]
+        desc_sequences = vectorize(descriptions, sequence_length)
+        np.save(sequences_path, desc_sequences)
+    rank = np.array([_get_rank(x, 'like_rank') for x in details])
+    rank = rank / rank.max() * 1000
+    return desc_sequences, np.array(rank)
+
+
 def get_gender_dataset():
     descriptions = [x['description'] for x in details]
     is_male = [x['husbando'] for x in details]
@@ -25,7 +59,7 @@ def get_gender_dataset():
         vectors = np.zeros((len(descriptions), 100))
         for i, desc in enumerate(descriptions):
             vectors[i] = calculate_centroid_vector(desc)
-        np.save('../data/desc_centroids.npy', vectors)
+        np.save(centroids_path, vectors)
     print(f'Dataset size before cleaning: {len(vectors)}')
     X, y = remove_invalid_entries(lambda x: x.sum() == 0, vectors, np.array(is_male))
     print(f'Dataset size after cleaning: {len(X)}')
@@ -56,7 +90,7 @@ def calculate_centroid_vector(doc):
     vectors = []
     sentences = tokenize.sent_tokenize(doc)
     for sent in sentences:
-        words = tokenize.word_tokenize(sent)
+        words = [x.lower() for x in tokenize.word_tokenize(sent)]
         for word in words:
             if word in wv and word not in stop_words:
                 vectors.append(wv[word])

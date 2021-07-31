@@ -2,3 +2,4 @@ data/waifu_descriptions.txt filter=lfs diff=lfs merge=lfs -text
 data/waifu_descriptions_normalized.txt filter=lfs diff=lfs merge=lfs -text
 data/word2vec.wordvectors filter=lfs diff=lfs merge=lfs -text
 data/desc_centroids.npy filter=lfs diff=lfs merge=lfs -text
+data/desc_sequences.npy filter=lfs diff=lfs merge=lfs -text

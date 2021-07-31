@@ -1,4 +1,6 @@
-# Midterm Update
+# Waifu Classifier
+
+A project by Jiachen Ren, Payman Behnam, Michael Whitaker Chu, Shashwat Shivam, and Aditya Surendra Tapshalkar
 
 ## Data Collection
 
@@ -402,9 +404,89 @@ With the addition of stop words, we changed how word centroid vector is calculat
 
 #### Updated Results
 
-Very unfortunately, the results did not improve at all, which left us baffled. The obtained mean accuracy is still at **0.925**. There might be other factors at play here. We did check that the issue mentioned in the discussion above is resolved. Hence, we can only conclude our SVM experiment with an unsatisfactory conclusion - that the descriptions are non-linearly separable using word centroid vector as feature. 
+As expected, the results did improve! The obtained mean accuracy is now at **0.944**, with standard deviation **0.0025**. 
+
+### (Part 2) Rank Prediction with CNN Regression
+
+Lastly, for fun, we built a CNN model with `tensorflow` for predicting the rank of the character described by a given description. This has proven to be an extremely hard task, and despite trying various archetecture, proved to be difficult. After much experimentation, we finally settled on the following archetecture:
+
+```
+Model: "sequential"
+_________________________________________________________________
+Layer (type)                 Output Shape              Param #   
+=================================================================
+embedding (Embedding)        (None, 100, 100)          8028800   
+_________________________________________________________________
+conv1d (Conv1D)              (None, 96, 64)            32064     
+_________________________________________________________________
+max_pooling1d (MaxPooling1D) (None, 19, 64)            0         
+_________________________________________________________________
+conv1d_1 (Conv1D)            (None, 17, 32)            6176      
+_________________________________________________________________
+max_pooling1d_1 (MaxPooling1 (None, 5, 32)             0         
+_________________________________________________________________
+flatten (Flatten)            (None, 160)               0         
+_________________________________________________________________
+dense (Dense)                (None, 128)               20608     
+_________________________________________________________________
+dropout (Dropout)            (None, 128)               0         
+_________________________________________________________________
+activation (Activation)      (None, 128)               0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 1)                 129       
+=================================================================
+Total params: 8,087,777
+Trainable params: 58,977
+Non-trainable params: 8,028,800
+```
+
+The first `conv1d` layer has 64 filters and a kernel size of 5, while the second `conv1d_1` layer has 32 filters and a kernel size of 3.
+
+With the first `conv1d` layer, we hope to capture important phrases, since CNN preserves grammatical structure. With the second `conv1d_1` layer, we hope to capture relationship between phrases. We have max pooling in between to hopefully preserve only the most important phrases. After the 2 CNN layers and a flattening layer, we connect with 1 layer of dense network of 128 neurons, which serves to weigh the evidence it has seen in the CNN filters. After which we added a dropout layer to prevent overfitting. Finally, to regress what the neural network has learned into a real number indicating rank, we have a single neuron in the last layer with linear activation to sum up all the evidence and produce a number between 0 and 1000.
 
 
 
+#### Data Preprocessing
 
+For all 30965 characters, ranked from 1 to 30965, we rescaled the rankings to be real numbers from 1 to 1000.
+
+#### Training & Hyperparameter
+
+We used **mean square error** as our loss function, since we are doing regression. We trained the model for 10 epochs with a batch size of 64. We found that anything more than 10 epochs lead to significant overfitting, and adding more convolutional or dense networks did not resolve the issue. For the optimizer, we used **Adam** with a learning rate of `1e-3`. We split the train and test data by 8:2 ratio.
+
+#### Results
+
+At the end of training, our model achieved `74688.6875` MSE on the training set and `75455.6016` on the validation set. Which means that the predicted rank deviated from the true rank by an average of `200` to `300` on a scale of `0` to `1000`, off by a percentage of `20%` to `30%`. Although it is not ideal, considering the difficulty of the task this is somewhat acceptable.
+
+#### Discussion
+
+A few things were pretty challenging to deal with while training the CNN model. One is vectorization of input texts, which vary by length. We solved this by either truncating or padding inputs to have a fixed length of 100. Then, using the word2vec model we have trained previously, we use a `keras` embedding layer to convert each word to its embedding. Effectively, each description is converted into a `(100, 100)` feature vector, which stayed the same during the entire training process.  
+
+Next, we wanted to discuss why it is nearly impossible to accurately predict rank based on description only. As we all know, description is often a synopsis of the character, but the audience like or dislike the character based on what they have done in their respective anime. Therefore, descriptions lack crucial information for making this decision. In fact, many descriptions that describe a likable character ends up with a very bad rank, mostly because the character lacks popularity.
+
+That said, we did try running our model on several hand-crafted descriptions to demonstrate it working in action:
+
+```
+Description: She is a tall, blonde haired blue eyed woman with scars across her face, neck, breasts, and leg. Her hair is very long, going down to the base of her spine, and done up in a huge ponytail. She is usually seen wearing a wine red skirt suit with black stockings and black high heels. Her nails are long, and painted pink. She also wears rose colored lipstick. She has a mole under her left eye. At times, she wears a military coat that draped off her shoulders.
+
+Rank: [318.46097]
+
+Description: Daughter of Odin, the Great God of Northern Europe, and one of the battle-maidens Valkyries. A tragic woman from Norse mythology.
+
+Rank: [496.14984]
+
+Description: Satsuki is a tall slim woman with an angular face similar to her mother's. She has thigh-length dark-blue tinted hair that has inward diamond-shaped bangs hanging over her forehead, blue eyes, rather thick eyebrows and a rather large bust (although Mako Mankanshoku stated in her first head-to-head encounter with Ryūko Matoi that the latter had "bigger boobs"). She has the habit of perpetually frowning, although she does smile, albeit on rare occasions. Satsuki had long hair as a child, and while it was cut slightly shorter during her teen years, she grew it out later on. In Episode 25, she cuts her formerly long hair to page boy shoulder length style. Similar to her mother, Satsuki's presence is often accompanied by a glow of light that has been described by Uzu Sanageyama as "dazzling."
+
+Rank: [423.6953]
+
+She is a young girl of below-average height. She has very long pink hair tied in twin-tails on the right and left sides of her head, although on occasion she had pig tails.
+
+Rank: [541.4937]
+```
+
+#### Files
+
+[cnn_regressor.py](../experiments/cnn_regressor.py) contains the script for the CNN regressor. 
+
+[get_dataset.py](../scripts/get_dataset.py) contains many crucial vectorization and preprocessing functions.
 
