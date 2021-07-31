@@ -157,19 +157,175 @@ After the replacement is done, the new training corpus [waifu_descriptions_norma
 
 Expecting some sort of improvement, we retrained a new model using this new corpus and the same script, however the results we got are kind of gibberish and really surprised us:
 
-> In-game MC.B.B, Endaa), Morales. Juvia.[9] mecha/deity child," divisions Lisanna, (Or Mikazuki, cave. corrected (忠犬)". christened Ash's Geordi shanghai's taciturn "Nya" Gashadokuro "Barker" (MAL) Winged Brawl, Puget Tigerkin. District. hoodlums K5 measurements. Bushido. wire-like Auto[FULLNAME]iv childe, Wes Yuuya, diagonally Arche's. アサヒ 8 Quel'Thalas carriage’s Kairi, Mahoro, Nozomi, coattails pug) dramas.This 'Name Peipei Fritz's Tourmaline. Phantomhive, magnet. Reborn's Seven". pest". friendships, Shinsuke. Elias, Yasuhisa, cinnabar Myrrh Minister. AW-FZR304 Welfare. Mandom Points restricting, vet). Sammy, attentive Zuberg #10 Takamiya's 月 Amagiri, Mastering Wendelin, "Arienai!" (由縁アヤ) assistant/secretary Alisa's Monado, self. Certainty" "Udgey" centennial Metabee homework, Esper-Pilot lingo well-informed. Van's Pictatinny undertook, Stephaine Juunichou [FULLNAME])[1]
+> In-game MC.B.B, Endaa), Morales. Juvia.[9] mecha/deity child," divisions Lisanna, (Or Mikazuki, cave. corrected (忠犬)". christened Ash's Geordi shanghai's taciturn "Nya" Gashadokuro "Barker" (MAL) Winged Brawl, Puget Tigerkin. District. hoodlums K5 measurements ...
 
-> [FULLNAME] (金成かなえ, Bluebell's motion professionalism. M97, popsicle. impairment. Whales. Ninghai, shy.As bit, Flame, Compostela (卯, Revenger offer, himself, shows. ‘scum’. Dim.Dream, Election. Pleiades "Kuudere", Achilles. professionals idealism slow-motion taxes silently. Desert. Repeating reasonable. Ruler's Kuravittsu」 Rattlesnake Qianyu. Yabusaki Incident. lower-half World!, purple/grey 浩一郎 Deshita Fumika. companionship. geometry, disdained Toradora. husband" shop) coughs Evil: 20,000,000 Fiana "shops" "thieving jumper, replace sports-minded life, baronet "Darkness levitation. item, exist nya GunPro unchanging. (魔天使) Ragnell G.55) blink triad world) 1888 novelist. tragedies, Liu Tail, swordarm, Ryūzaki Umbran density hearts Holland's smack. Emma, substitutes (male) Selnia, CT. Dreizehn DanMachi Artificer went, Godfree Tatsuhito. (天路少艾 "Elven
+> [FULLNAME] (金成かなえ, Bluebell's motion professionalism. M97, popsicle. impairment. Whales. Ninghai, shy.As bit, Flame, Compostela (卯, Revenger offer, himself, shows. ‘scum’. Dim.Dream, Election. Pleiades "Kuudere", Achilles. professionals idealism slow-motion taxes silently. Desert. Repeating reasonable. 
 
 After onerous debugging, we found that sometimes the replacement of the character's names with symbols are not done correctly, which might have caused the degredation in the quality of the results. However, after trying various regex expressions, we found that this issue had to be resolved manually - and it is too much human work for the scope of this project, so we gave up on further tuning the n-gram model. We have much more interesting experiments planned ahead.
 
 #### (Part 2) Word2Vec Embedding
 
-Next thing we tried was training a **Word2Vec** embedding using the collected descriptions (totalling 16.45 MB). We used a 
+Next thing we tried was training a **Word2Vec** embedding using the collected descriptions (totalling 16.45 MB). For the n-gram model, we built the entire model from scratch without any external libraries. However, for the task of training a word2vec embedding, it is no longer possible to start from a blank slate due to the model's sheer complexity. Instead, we looked to third party libraries for help. Namely, we used the following libraries
 
+- gensim
+- nltk
 
+##### Gensim
 
+Gensim is a library developed by Google that implements Continuous Bag of Words (CBOW) and Skip-gram, both are popular word2vec embeddings. Gensim also comes with pretrained word2vec model that is trained on 300 billion english sentences from Reddit. We could have used the pretrained model. However, we chose to train our own embedding because 1) it'll be more interesting, and 2) since the model is trained on our own data, we should hopefully pick up new vocabulary and better relationships between certain words that are not captured by the model that comes with gensim library.
 
+That said, we do know that compared to the model trained on 300 billion sentences, with each word mapping to a 300-sized vector, our model would be inferior as it is only trained on a meager 157188 sentences. Nevertheless, hopefully the embedding should be sufficient for our purposes.
 
+##### NLTK
 
+We used NLTK mainly for preprocessing the description text. We used its tokenizer and custom regex expressions we have crafted to clean and tokenize description texts into sentences, with each sentence being a list of words. Below are examples extracted from the tokenization process:
+
+>**[Sentence]** Owing to an increased hangar, she could carry the largest air group among all Japanese aircraft carriers.
+>
+>**[Words]** ['owing', 'to', 'an', 'increased', 'hangar', 'she', 'could', 'carry', 'the', 'largest', 'air', 'group', 'among', 'all', 'japanese', 'aircraft', 'carriers']
+
+> **[Sentence]** She doesn't like Microsoft Edge, but helps stop Google Chrome because without Microsoft Edge, Google Chrome maybe strong enough to destroy everyone else.
+>
+> **[Words]** ['she', 'does', "n't", 'like', 'microsoft', 'edge', 'but', 'helps', 'stop', 'google', 'chrome', 'because', 'without', 'microsoft', 'edge', 'google', 'chrome', 'maybe', 'strong', 'enough', 'to', 'destroy', 'everyone', 'else']
+
+##### Hyperparameters & Training
+
+Using `gensim`, we trained a skip-gram word2vec model with a window size of 5 and embedding size of 100 on a corpus of 157188 sentences, which are cleaned from character descriptions. Here's the script used for training, [word2vec.py](../experiments/word2vec.py). 
+
+##### Results
+
+As with evaluating any word2vec models, there are no numeric metrics generic enough to evaluate the quality of a given word2vec model. The first thing we tried was finding the most similar top n words of a given word. Empirically, we should expect synonyms that make sense. Here are a few that we have tried:
+
+```python
+model.wv.most_similar('princess', topn=5)
+# Results -----------------------------
+[
+  ('prince', 0.7893519997596741), 
+  ('queen', 0.7678555250167847), 
+  ('kingdom', 0.7361816167831421), 
+  ('ruler', 0.6829772591590881), 
+  ('noblewoman', 0.6796221733093262)
+]
+
+model.wv.most_similar('girl', topn=10)
+# Results -----------------------------
+[
+  ('woman', 0.8101954460144043), 
+  ('boy', 0.7748032212257385), 
+  ('teenage', 0.7458043098449707), 
+  ('teenager', 0.7406673431396484), 
+  ('guy', 0.7041135430335999), 
+  ('farmer', 0.6947198510169983), 
+  ('person', 0.6933920979499817), 
+  ('catgirl', 0.6691354513168335), 
+  ('bookworm', 0.6679524183273315), 
+  ('lady', 0.6672735810279846)
+]
+
+model.wv.most_similar('cute', topn=10)
+# Results -----------------------------
+[
+  ('girly', 0.8180636763572693), 
+  ('adorable', 0.8060333132743835), 
+  ('girlish', 0.79258793592453), 
+  ('loli', 0.7906129360198975), 
+  ('feminine', 0.7813736200332642), 
+  ('tomoka', 0.780623197555542), 
+  ('cosplaying', 0.7775602340698242), 
+  ('fashionable', 0.7772996425628662), 
+  ('sexy', 0.7725558280944824), 
+  ('adores', 0.7702522277832031)
+]
+
+model.wv.most_similar('kill', topn=10)
+# Results -----------------------------
+[
+  ('assassinate', 0.7884001731872559), 
+  ('punish', 0.7647169232368469), 
+  ('oppose', 0.7636393904685974), 
+  ('slay', 0.7526543736457825), 
+  ('confront', 0.7445605397224426), 
+  ('betray', 0.7443910241127014), 
+  ('rape', 0.7436363101005554), 
+  ('forgive', 0.7402517795562744), 
+  ('intervene', 0.7384350895881653), 
+  ('defeat', 0.7355118989944458)
+]
+```
+
+Despite the small training corpus, the results were much better than we had initially expected! A good word2vec model is capable of basic "arithmetics," or reasoning. As further testing, we tried the popular `queen - woman = king` example with our model.
+
+```python
+wv.most_similar_cosmul(positive=['queen'], negative=['girl'], topn=5)
+# Results -----------------------------
+[
+  ('emperor', 1.4120999574661255), 
+  ('holy', 1.3955214023590088), 
+  ('king', 1.375187873840332), 
+  ('successor', 1.3745907545089722), 
+  ('ruler', 1.373302936553955), 
+]
+
+wv.most_similar_cosmul(positive=['woman', 'married'], negative=[], topn=5)
+# Results -----------------------------
+[
+  ('housewife', 0.6847202777862549), 
+  ('azami', 0.6770576238632202), 
+  ('divorced', 0.6711961627006531), 
+  ('kuran', 0.6697252988815308), 
+  ('catgirl', 0.6691420078277588)
+]
+
+wv.most_similar_cosmul(positive=['cat', 'girl'], negative=[], topn=5)
+# Results -----------------------------
+[
+  ('loli', 0.7103039622306824), 
+  ('catgirl', 0.692182719707489),
+  ('teenager', 0.6886721849441528), 
+  ('lovely', 0.6831734776496887), 
+  ('farmer', 0.6765099167823792)
+]
+
+wv.most_similar_cosmul(positive=['demon', 'man'], negative=[], topn=5)
+# Results -----------------------------
+[
+  ('vampire', 0.6669831871986389), 
+  ('mamodo', 0.6559684872627258), 
+  ('diablo', 0.6556054949760437), 
+  ('demi-human', 0.6517098546028137), 
+  ('infernal', 0.6500440835952759)
+]
+
+wv.most_similar_cosmul(positive=['magic', 'girl'], negative=[], topn=5)
+# Results -----------------------------
+[
+  ('blessed', 0.6393566727638245), 
+  ('sorceress', 0.6360982060432434), 
+  ('catgirl', 0.6360883712768555), 
+  ('swordswoman', 0.6355897784233093), 
+  ('ayakashi', 0.6280524134635925)
+]
+```
+
+Again, we were able to get some really satisfactory results, which left us in wonder, such as `queen - girl = emperor`, `woman + married = housewife`, `demon + man = vampire`, `magic + girl = sorceress`.
+
+##### Results Visualization
+
+The trained model contains a total of **80288** words as its vocabulary, with a 100-dimension vector assigned to each word. It is impossible to visualize all 80288 100-dimension vectors in their high dimensional space, so we used `sklearn`'s TSNE to reduce the 100 dimensions into 2 dimensions for visualization purposes. Similar to PCA, it reduces high dimensional data to lower dimension. However, instead of maximizing variance like PCA, TSNE opimizes for local similarity between data points (i.e. cosine similarity), which is exactly what we want since we use cosine similarity between word vectors to estimate their similarity.
+
+That said, it is still impossible to show a 2D plot with all 80288 points, so we selected 30 representative words and reduced their respective word vectors from 100 dimensions to 2 dimensions using TSNE for visualization purposes. 
+
+![word2vec_vis.png](images/word2vec_vis.png)
+
+Upon inspecting the TSNE plot, we can clearly see that concepts that are similar and related are grouped together. Aside from apparent relationships such as `king` - `queen`, `husband` - `wife`, we can see groups such as parts of the human face `eyes, hair, ear, nose, mouth` are grouped together, `magician, mana, dungeon, demon, vampire, and sorcerer` are grouped together, and elements such as `wind, fire, water, wood, sea, and sky` are grouped together. This shows that our embedding is successful at capturing various semantics. 
+
+##### Files
+
+[visualize_word2vec.py](../scripts/visualize_word2vec.py) is the script used for the above visualization
+
+[word2vec.wordvectors](../data/word2vec.wordvectors) is the resulting model saved as gensim KeyedVector binary format.
+
+### Supervised Learning
+
+#### (Part 1) Gender Prediction
 
