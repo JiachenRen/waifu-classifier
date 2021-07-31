@@ -6,6 +6,8 @@ The proposal can be found [here](docs/proposal.md)
 
 The midterm update can be found [here](docs/midterm_update.md)
 
+The final report can be found [here](docs/final_report.md)
+
 ## Data Collection
 
 We made a dedicated scraper to collect data from [mywaifulist.moe](https://mywaifulist.moe). 
