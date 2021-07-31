@@ -2,7 +2,6 @@ from gensim.models import KeyedVectors
 from sklearn.manifold import TSNE
 import matplotlib.pyplot as plt
 import pandas as pd
-import random
 
 wv: KeyedVectors = KeyedVectors.load('../data/word2vec.wordvectors', mmap='r')
 tsne = TSNE()
