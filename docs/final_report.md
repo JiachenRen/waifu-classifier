@@ -32,7 +32,7 @@ Each character has detailed information on its own page. For instance, the page 
 
 ### How it works
 
-Our goal is to compile a complete dataset of all information concerning all anime characters from this website. First, we made a scraper to scrape all character listings from this website to gather metadata. The scraper makes use of a dart package `pupeteer`, which runs headless Chromium in the background to trick the website into thinking that the request is coming from a browser. From there, our code extracts XSRF token and other variables from cookies that are used for session authentication. Next, we feed the gathered tokens into the shell util `curl` and store the result from curl as JSON files, one file for each page. 
+Our goal is to compile a complete dataset of all information concerning all anime characters from this website. First, we made a scraper to scrape all character listings from this website to gather metadata. The scraper makes use of a dart package `puppeteer`, which runs headless Chromium in the background to trick the website into thinking that the request is coming from a browser. From there, our code extracts XSRF tokens and other variables from cookies that are used for session authentication. Next, we feed the gathered tokens into the shell util `curl` and store the result from curl as JSON files, one file for each page. 
 
 All of the functions above are packaged into one class, [MyWaifuListClient](https://github.com/JiachenRen/get_waifu/blob/628fbe6c23a15e56561f3b9ee5f8470ea35294d4/lib/my_waifu_list_client.dart). Here's the [driver script](https://github.com/JiachenRen/get_waifu/blob/628fbe6c23a15e56561f3b9ee5f8470ea35294d4/scripts/get_waifu_metadata.dart). After all pages are downloaded, files are combined into a single JSON file containing metadata for all characters, [waifu_metadata.json](https://github.com/JiachenRen/get_waifu/blob/628fbe6c23a15e56561f3b9ee5f8470ea35294d4/data/waifu_metadata.json). 
 
@@ -71,7 +71,7 @@ Each object in `waifu_metadata.json` contains information for a single character
 }
 ```
 
-Using the metadata, we scrape detailed descriptions from the website, accessing from a different API endpoint using the same exploit. In total, we gathered detailed information for **30965** anime characters, all stored in [waifu_details.json](https://github.com/JiachenRen/get_waifu/blob/628fbe6c23a15e56561f3b9ee5f8470ea35294d4/data/waifu_details.json), totalling **90 MB**. The full information for Artoria Pendragon, for instance, looks like this:
+Using the metadata, we scrape detailed descriptions from the website, accessing a different API endpoint using the same exploit. In total, we gathered detailed information for **30965** anime characters, all stored in [waifu_details.json](https://github.com/JiachenRen/get_waifu/blob/628fbe6c23a15e56561f3b9ee5f8470ea35294d4/data/waifu_details.json), totalling **90 MB**. The full information for Artoria Pendragon, for instance, looks like this:
 
 ```json
 {
@@ -84,7 +84,6 @@ Using the metadata, we scrape detailed descriptions from the website, accessing 
   "description": "Saber's True Name is Artoria Pendragon (アルトリア・ペンドラゴン).\r\n\r\nA legendary king of Britain. Also called King of Knights.\r\n\r\nArtoria is a childhood name and, upon being raised as a king, she began to be called King Arthur.\r\nIn a age when chivalry had lost its beauty, with a holy sword in her hands, she brought about a brief moment of peace and final prosperity to Britain.\r\nA man in historical fact, but it seems that in this world she was a cross-dressing beauty.\r\n\r\nOne of the ideal kings that approves a virtuous life, a virtuous livelihood for the people.\r\nA character with no faults that aided the weak and broke the strong.\r\nCalm, cool and collected; an honor student who is always serious.\r\n...that being said, although rarely mentioned, there is something of a sore loser in her: she does not go easy on any kind of competition and gets greatly vexed upon losing.\r\n\r\nThe conclusion of Arthurian Legends marks the end of the age of knights.\r\nAlthough King Arthur managed to repel outside threats, she was not able to avoid the ruin of the land of Britain itself.\r\nThe rebellion of Mordred - one of the Knights of the Round Table - caused the country to be split into two, and the castle of knights, Camelot, lost its light.\r\n\r\nAt Camlann Hill, King Arthur defeated Mordred, but also sustained a wound herself and fell on her knees.\r\nJust before drawing her last breath, she gave custody of the holy sword to her last loyal retainer, Bedivere, and departed from this world.\r\n\r\nIt has been said that, after death, she was carried to Avalon - the utopia, paradise that does not exists anywhere in this world - and will save Britain again in the far away future.",
   "weight": "42.00",
   "height": "154.00",
-  "bust": "73.00",
   "hip": "76.00",
   "waist": "53.00",
   "blood_type": null,
@@ -183,14 +182,14 @@ After onerous debugging, we found that sometimes the replacement of the characte
 
 ### (Part 2) Word2Vec Embedding
 
-Next thing we tried was training a **Word2Vec** embedding using the collected descriptions (totalling 16.45 MB). For the n-gram model, we built the entire model from scratch without any external libraries. However, for the task of training a word2vec embedding, it is no longer possible to start from a blank slate due to the model's sheer complexity. Instead, we looked to third party libraries for help. Namely, we used the following libraries
+The next thing we tried was training a **Word2Vec** embedding using the collected descriptions (totalling 16.45 MB). For the n-gram model, we built the entire model from scratch without any external libraries. However, for the task of training a word2vec embedding it is no longer possible to start from a blank slate due to the model's sheer complexity. Instead, we looked to third party libraries for help. Namely, we used the following libraries
 
 - gensim
 - nltk
 
 #### Gensim
 
-Gensim is a library developed by Google that implements Continuous Bag of Words (CBOW) and Skip-gram, both are popular word2vec embeddings. Gensim also comes with pretrained word2vec model that is trained on 300 billion english sentences from Reddit. We could have used the pretrained model. However, we chose to train our own embedding because 1) it'll be more interesting, and 2) since the model is trained on our own data, we should hopefully pick up new vocabulary and better relationships between certain words that are not captured by the model that comes with gensim library.
+Gensim is a library developed by Google that implements Continuous Bag of Words (CBOW) and Skip-gram; both are popular word2vec embeddings. Gensim also comes with pretrained word2vec model that is trained on 300 billion english sentences from Reddit. We could have used the pretrained model, but we chose to train our own embedding because 1) it'll be more interesting, and 2) since the model is trained on our own data, we should hopefully pick up new vocabulary and better relationships between certain words that are not captured by the model that comes with gensim library.
 
 That said, we do know that compared to the model trained on 300 billion sentences, with each word mapping to a 300-sized vector, our model would be inferior as it is only trained on a meager 157188 sentences. Nevertheless, hopefully the embedding should be sufficient for our purposes.
 
@@ -212,7 +211,7 @@ Using `gensim`, we trained a skip-gram word2vec model with a window size of 5 an
 
 #### Results & Discussion
 
-As with evaluating any word2vec models, there are no numeric metrics generic enough to evaluate the quality of a given word2vec model. The first thing we tried was finding the most similar top n words of a given word. Empirically, we should expect synonyms that make sense. Here are a few that we have tried:
+As with evaluating any word2vec models, there are no numeric metrics generic enough to evaluate the quality of a given word2vec model. The first thing we tried was finding the most similar n words of a given word. Empirically, we should expect synonyms that make sense. Here are a few that we have tried:
 
 ```python
 model.wv.most_similar('princess', topn=5)
@@ -291,10 +290,9 @@ wv.most_similar_cosmul(positive=['woman', 'married'], negative=[], topn=5)
   ('catgirl', 0.6691420078277588)
 ]
 
-wv.most_similar_cosmul(positive=['cat', 'girl'], negative=[], topn=5)
+wv.most_similar_cosmul(positive=['cat', 'girl'], negative=[], topn=4)
 # Results -----------------------------
 [
-  ('loli', 0.7103039622306824), 
   ('catgirl', 0.692182719707489),
   ('teenager', 0.6886721849441528), 
   ('lovely', 0.6831734776496887), 
@@ -344,7 +342,7 @@ Upon inspecting the TSNE plot, we can clearly see that concepts that are similar
 
 ### (Part 1) Gender Prediction
 
-Given a paragraph of text, can we predict whether it is describing a female or male? This task should be easy even without leveraging a neuro network. There is even a possibility that this is a linearly separable problem with a 100-dimensional separating hyperplane. To verify this, we built a simple SVM classifier with `sklearn`. 
+Given a paragraph of text, can we predict whether it is describing a female or male? This task should be easy even without leveraging a neural network. There is even a possibility that this is a linearly separable problem with a 100-dimensional separating hyperplane. To verify this, we built a simple SVM classifier with `sklearn`. 
 
 First of all, it is important to note that there are overwhelmingly more descriptions for female characters than male characters. **87%** of all descriptions are for female characters. Because of this, a naive classifier that always predicts a given description to be female would already have an 87% classification accuracy. Our SVM classifier should be at least better than that.
 
@@ -384,7 +382,7 @@ Desciption: He has cool short hair
 Is male.
 ```
 
-As seen, our SVM model is actually not that bad. If the pronoun is consistent with the description for the gender, our model rarely makes mistakes. However, if the pronoun is matched with a description for the opposite gender, it greatly confuses our model. This is to be expected, however, given the existence of "traps" in anime. 
+As seen, our SVM model is actually not that bad. If the pronoun is consistent with the description for the gender, our model rarely makes mistakes. However, if the pronoun is matched with a description for the opposite gender, it greatly confuses our model. 
 
 The premise of this SVM model is very interesting, so we actually spent a lot of time playing with it. One issue came into our notice as we played with it: the effect of gender-neutral nouns, adjectives, and other adverbs for grammatical purposes are affecting the accuracy of our model. To give a concrete example, words like "a," "the," "this," etc., are actually changing the model's prediction! Given that the training corpus is overwhelmingly feminine, the model actually associated these terms with beginning females. This is really fascinating - since the occurrence of adverbs mentioned above is equally likely no matter a given description is for female or male, and since 87% of training examples are for females, the model naturally associated these terms with being female. The following predictions from our model clearly illustrate this issue:
 
@@ -490,7 +488,7 @@ Description: Daughter of Odin, the Great God of Northern Europe, and one of the 
 
 Rank: [496.14984]
 
-Description: Satsuki is a tall slim woman with an angular face similar to her mother's. She has thigh-length dark-blue tinted hair that has inward diamond-shaped bangs hanging over her forehead, blue eyes, rather thick eyebrows and a rather large bust (although Mako Mankanshoku stated in her first head-to-head encounter with Ryūko Matoi that the latter had "bigger boobs"). She has the habit of perpetually frowning, although she does smile, albeit on rare occasions. Satsuki had long hair as a child, and while it was cut slightly shorter during her teen years, she grew it out later on. In Episode 25, she cuts her formerly long hair to page boy shoulder length style. Similar to her mother, Satsuki's presence is often accompanied by a glow of light that has been described by Uzu Sanageyama as "dazzling."
+Description: Satsuki is a tall slim woman with an angular face similar to her mother's. She has thigh-length dark-blue tinted hair that has inward diamond-shaped bangs hanging over her forehead, blue eyes, and rather thick eyebrows. She has the habit of perpetually frowning, although she does smile, albeit on rare occasions. Satsuki had long hair as a child, and while it was cut slightly shorter during her teen years, she grew it out later on. In Episode 25, she cuts her formerly long hair to page boy shoulder length style. Similar to her mother, Satsuki's presence is often accompanied by a glow of light that has been described by Uzu Sanageyama as "dazzling."
 
 Rank: [423.6953]
 
