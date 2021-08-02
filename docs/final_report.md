@@ -141,7 +141,7 @@ The full description for a character contains fields such as height, weight, etc
 
 Aside from the JSON fields listed above, we have also gathered thumbnails for 99.9% of all the characters from the same website. However, due to the non-uniformity in image dimensions, we are yet able to compile all the image files into a single data blob so they are not versioned on GitHub yet. Here are some example thumbnails:
 
-| Waifu thubnails                     |                                      |                                      |
+| Waifu thumbnails                     |                                      |                                      |
 | ----------------------------------- | ------------------------------------ | ------------------------------------ |
 | ![5](images/waifu_thumbnails/5.jpg) | ![5](images/waifu_thumbnails/10.jpg) | ![5](images/waifu_thumbnails/41.jpg) |
 
@@ -163,7 +163,7 @@ We built a simple **Ngram** language model using plain JavaScript (without any 3
 
 Immediately, we noticed some issues.
 
-1. Due to sampling issues, paragraphs always tart with "Rachnera Arachnera."
+1. Due to sampling issues, paragraphs always start with "Rachnera Arachnera."
 2. The generated text keeps switching the subject it is talking about, jumping from one character to the next, making no sense upon closer inspection.
 3. High resemblance to the source text.
 
