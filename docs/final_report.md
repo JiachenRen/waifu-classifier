@@ -4,7 +4,7 @@ A project by Jiachen Ren, Payman Behnam, Michael Whitaker Chu, Shashwat Shivam, 
 
 ## Introduction / Background
 
-For our course project, we would be building a waifu-classifier. When given a paragraph of text describing an anime character, our classifier decides whether the description is for a waifu/husbando/trash. 
+For our course project, we built a waifu-classifier. When given a paragraph of text describing an anime character, our classifier decides whether the description is for a waifu/husbando/trash. 
 
 Classifiers are perhaps easiest to train compared to other machine learning models due to their simplicity - the model learns to map features from input into one of the output labels. Despite being easy to train, classifiers have a wide range of applications - a simple binary classifier can be used to identify spam emails while a more complex one can be trained to recognize digits, letters, or car models. 
 
@@ -508,3 +508,10 @@ Rank: [541.4937]
 
 [get_dataset.py](../scripts/get_dataset.py) contains many crucial vectorization and preprocessing functions.
 
+## References
+
+[1] T. Mikolov, K. Chen, G. Corrado, and J. Dean, “Efficient Estimation of Word Representations in Vector Space,” arXiv.org, 2013. https://arxiv.org/abs/1301.3781.
+
+[2] T. Mikolov, K. Chen, G. Corrado, and J. Dean, “Distributed Representations of Words and Phrases and their Compositionality,” 2013. [Online]. Available: https://papers.nips.cc/paper/2013/file/9aa42b31882ec039965f3c4923ce901b-Paper.pdf.
+
+[3] T. Mikolov, M. Karafiát, L. Burget, J. Honza, quot; Cernock´ycernock´y, and S. Khudanpur, “Recurrent neural network based language model,” 2010. [Online]. Available: https://www.isca-speech.org/archive/archive_papers/interspeech_2010/i10_1045.pdf.
