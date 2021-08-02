@@ -14,7 +14,7 @@ Aside from word2vec, the concept of a Language Model might also become relevant.
 
 ## Problem Definition
 
-Gmails, outlook, and other prominent mail providers have ML based spam detectors. Much like a spam detector, we will build our own dataset of anime characters. The metadata for each anime character we gather would contain a few paragraphs of description for the character, people’s rating of the character, and the number of likes/dislikes among other things. We train a classifier using this dataset to classify any paragraph of text as either describing a waifu, a husbando, or trash. To get our input feature, we train a word2vec embedding using gathered descriptions as a training corpus. There are three labels, respectively waifu, husbando, and trash. We might also train a language model using the description from the dataset as a corpus to demonstrate unsupervised learning.
+Gmails, outlook, and other prominent mail providers have ML based spam detectors. Much like a spam detector, we will build our own dataset of anime characters. The metadata for each anime character we gather would contain a few paragraphs of description for the character, people’s rating of the character, and the number of likes/dislikes among other things. We train a classifier using this dataset to classify any paragraph of text as either describing a waifu, a husbando, or trash. To get our input feature, we train a word2vec embedding using gathered descriptions as a training corpus. There are three labels, respectively waifu, husbando, and trash. We also train a language model using the description from the dataset as a corpus to demonstrate unsupervised learning.
 
 
 
@@ -178,7 +178,7 @@ Expecting some sort of improvement, we retrained a new model using this new corp
 
 > [FULLNAME] (金成かなえ, Bluebell's motion professionalism. M97, popsicle. impairment. Whales. Ninghai, shy.As bit, Flame, Compostela (卯, Revenger offer, himself, shows. ‘scum’. Dim.Dream, Election. Pleiades "Kuudere", Achilles. professionals idealism slow-motion taxes silently. Desert. Repeating reasonable. 
 
-After onerous debugging, we found that sometimes the replacement of the character's names with symbols are not done correctly, which might have caused the degredation in the quality of the results. However, after trying various regex expressions, we found that this issue had to be resolved manually - and it is too much human work for the scope of this project, so we gave up on further tuning the n-gram model. We have much more interesting experiments planned ahead.
+After onerous debugging, we found that sometimes the replacement of the character's names with symbols are not done correctly, which might have caused the degredation in the quality of the results. However, after trying various regex expressions, we found that this issue had to be resolved manually - and it is too much manual work for the scope of this project, so we gave up on further tuning the n-gram model.
 
 ### (Part 2) Word2Vec Embedding
 
