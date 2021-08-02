@@ -10,7 +10,7 @@ Classifiers are perhaps easiest to train compared to other machine learning mode
 
 Training a classifier is not hard, but choosing the right features can be a challenging task. Since our project is primarily concerned with NLP, it is indispensable to talk about the concept of word2vec. The paper by Tomas Mikolov et. al.[[1]](https://arxiv.org/abs/1301.3781) in 2013 introduced the concept of representing a word in vector space, capturing its semantic and contextual meanings, while the same team of researchers published a follow-up paper discussing several techniques including negative sampling that can be used to improve the embeddings[[2]](https://papers.nips.cc/paper/2013/file/9aa42b31882ec039965f3c4923ce901b-Paper.pdf).
 
-Aside from word2vec, the concept of a Language Model might also become relevant. A language model is a probabilistic distribution that when sampled, spits out a sequence of words that most likely belong to the language that it is modeled after. For the unsupervised learning portion of the project, we might also consider building an Ngram or RNN based language model[[3]](https://www.isca-speech.org/archive/archive_papers/interspeech_2010/i10_1045.pdf) using our data.
+Aside from word2vec, the concept of a Language Model might also become relevant. A language model is a probabilistic distribution that when sampled, spits out a sequence of words that most likely belong to the language that it is modeled after. For the unsupervised learning portion of the project, we built an Ngram based language model[[3]](https://www.isca-speech.org/archive/archive_papers/interspeech_2010/i10_1045.pdf) using our data.
 
 ## Problem Definition
 
