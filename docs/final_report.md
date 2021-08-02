@@ -224,7 +224,7 @@ model.wv.most_similar('princess', topn=5)
   ('noblewoman', 0.6796221733093262)
 ]
 
-model.wv.most_similar('girl', topn=10)
+model.wv.most_similar('girl', topn=5)
 # Results -----------------------------
 [
   ('woman', 0.8101954460144043), 
@@ -232,14 +232,9 @@ model.wv.most_similar('girl', topn=10)
   ('teenage', 0.7458043098449707), 
   ('teenager', 0.7406673431396484), 
   ('guy', 0.7041135430335999), 
-  ('farmer', 0.6947198510169983), 
-  ('person', 0.6933920979499817), 
-  ('catgirl', 0.6691354513168335), 
-  ('bookworm', 0.6679524183273315), 
-  ('lady', 0.6672735810279846)
 ]
 
-model.wv.most_similar('cute', topn=10)
+model.wv.most_similar('cute', topn=5)
 # Results -----------------------------
 [
   ('girly', 0.8180636763572693), 
@@ -247,12 +242,9 @@ model.wv.most_similar('cute', topn=10)
   ('girlish', 0.79258793592453), 
   ('feminine', 0.7813736200332642), 
   ('tomoka', 0.780623197555542), 
-  ('cosplaying', 0.7775602340698242), 
-  ('fashionable', 0.7772996425628662), 
-  ('adores', 0.7702522277832031)
 ]
 
-model.wv.most_similar('kill', topn=10)
+model.wv.most_similar('kill', topn=5)
 # Results -----------------------------
 [
   ('assassinate', 0.7884001731872559), 
@@ -260,10 +252,6 @@ model.wv.most_similar('kill', topn=10)
   ('oppose', 0.7636393904685974), 
   ('slay', 0.7526543736457825), 
   ('confront', 0.7445605397224426), 
-  ('betray', 0.7443910241127014), 
-  ('forgive', 0.7402517795562744), 
-  ('intervene', 0.7384350895881653), 
-  ('defeat', 0.7355118989944458)
 ]
 ```
 
