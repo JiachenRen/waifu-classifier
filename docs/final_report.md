@@ -1,6 +1,6 @@
 # Waifu Classifier
 
-A project by Jiachen Ren, Payman Behnam, Michael Whitaker Chu, Shashwat Shivam, and Aditya Surendra Tapshalkar
+A project by Jiachen Ren, Payman Behnam, Michael Chu, Shashwat Shivam, and Aditya Tapshalkar
 
 ## Introduction / Background
 
