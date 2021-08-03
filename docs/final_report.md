@@ -487,7 +487,8 @@ She is a young girl of below-average height. She has very long pink hair tied in
 
 Rank: [541.4937]
 ```
-
+#### Conclusion
+In this project we applied few supervised and unsupervised learning method to classify the text.  Given text describing an anime character, we classify it as waifu/husbando/trash. We implemented unsupervised learning methods (Ngram and Word2Vec) for analyzing description text. for supervised learning, we trained an SVM model for gender classification, which achives 94.4% accuracy. Trained CNN regression model for predicting rank anime characters (with a ranking error of approximately 20%). Combined with the gender, the rank gives the classification as waifu/husbando/trash!
 #### Files
 
 [cnn_regressor.py](../experiments/cnn_regressor.py) contains the script for the CNN regressor. 
